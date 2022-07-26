@@ -1,13 +1,82 @@
-import React, { useState } from "react";
-import Header from "../../elements/Header";
-import Sidebar from "../../elements/Sidebar";
-import WelcomeBanner from "../../elements/WelcomeBanner";
-import axios from "axios";
+import React, { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { formBudayaSchema } from "./validation";
+import provinsiAPI from "../../../api/provinsi";
+import { useNavigate } from "react-router";
+import kebudayaanAPI from "../../../api/kebudayaan";
+import { routes } from "../../../configs/routes";
+import defaultImg from "../../../assets/contoh1.png";
+import checkURL from "../../../helper/checkURL";
 
 function TambahBudaya() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { register, handleSubmit } = useForm();
+  const [provinsi, setProvinsi] = useState([]);
+  const navigate = useNavigate();
+  const [alert, setAlert] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    // defaultValues: preloadValues,
+    resolver: yupResolver(formBudayaSchema),
+  });
+
+  const watchImage = watch("gambar");
+
+  const imageURL = useMemo(() => {
+    if (typeof watchImage === "string" && checkURL(watchImage)) {
+      return watchImage;
+    }
+    if (watchImage?.length > 0 && watchImage !== "undefined") {
+      return URL.createObjectURL(watchImage[0]);
+    }
+    return "";
+  }, [watchImage]);
+
+  const date = new Date();
+  const yearToday = date.getFullYear();
+
+  const fetchDataProvinsi = async () => {
+    const res = await provinsiAPI.getProvinces();
+    setProvinsi(res.data.data);
+  };
+
+  useEffect(() => {
+    fetchDataProvinsi();
+  }, []);
+
+  const submitForm = async (data) => {
+    // const addForm = document.getElementById("add_budaya");
+    const formData = new FormData();
+    formData.append("namaBudaya", data.namaBudaya);
+    formData.append("gambar", data.gambar ? data.gambar[0] : undefined);
+    formData.append("tahun", data.tahun);
+    formData.append("deskripsi", data.deskripsi);
+    formData.append("video", data.video || "");
+    formData.append("jenisKebudayaanId", parseInt(data.jenisKebudayaanId));
+    formData.append("provinsiId", parseInt(data.provinsiId || "1"));
+
+    try {
+      setLoading(true);
+      console.log(formData);
+      const res = await kebudayaanAPI.addData(formData);
+      if (res.data.success) {
+        setLoading(false);
+        navigate(routes.ADMIN());
+        setAlert(false);
+      }
+    } catch (error) {
+      setLoading(false);
+      setMessage(error.response.data.message);
+      setAlert(true);
+    }
+    console.log("halo");
+  };
 
   return (
     <div className=" bg-gray-100">
@@ -23,7 +92,7 @@ function TambahBudaya() {
               </header>
               <div className="p-3">
                 {/* Table */}
-                <form>
+                <form id="add_budaya" onSubmit={handleSubmit(submitForm)}>
                   <div className="overflow-x-auto">
                     <div className="App">
                       <div className="grid gap-y-4 p-8">
@@ -39,53 +108,35 @@ function TambahBudaya() {
                             className="w-full p-2 border border-gray-200 rounded mt-4"
                             placeholder="Masukkan Nama Budaya"
                             name="title"
-                            {...register("title")}
+                            {...register("namaBudaya")}
                           ></input>
+                          {errors && (
+                            <p className="text-left text-red-500 text-sm">
+                              {errors?.namaBudaya?.message}
+                            </p>
+                          )}
                         </div>
                         <div className="w-full">
                           <label
                             htmlFor=""
                             className="text-sm font-bold text-gray-600 block text-left"
                           >
-                            Nomor Pencatatan
+                            Tahun
                           </label>
                           <input
-                            type="text"
+                            type="number"
                             className="w-full p-2 border border-gray-200 rounded mt-4"
-                            placeholder="Masukkan Nomor Pencatatan"
+                            placeholder={yearToday}
+                            min={2010}
+                            max={yearToday}
                             name="date"
-                            {...register("date")}
+                            {...register("tahun")}
                           ></input>
-                        </div>
-                        <div className="w-full">
-                          <label
-                            htmlFor=""
-                            className="text-sm font-bold text-gray-600 block text-left"
-                          >
-                            Nomor Penetapan
-                          </label>
-                          <input
-                            type="text"
-                            className="w-full p-2 border border-gray-200 rounded mt-4"
-                            placeholder="Masukkan Nomor Penetapan"
-                            name="date"
-                            {...register("date")}
-                          ></input>
-                        </div>
-                        <div className="w-full">
-                          <label
-                            htmlFor=""
-                            className="text-sm font-bold text-gray-600 block text-left"
-                          >
-                            Provinsi
-                          </label>
-                          <input
-                            type="text"
-                            className="w-full p-2 border border-gray-200 rounded mt-4"
-                            placeholder="Masukkan Provinsi Asal"
-                            name="date"
-                            {...register("date")}
-                          ></input>
+                          {errors && (
+                            <p className="text-left text-red-500 text-sm">
+                              {errors?.tahun?.message}
+                            </p>
+                          )}
                         </div>
                         <div className="w-full">
                           <label
@@ -99,9 +150,57 @@ function TambahBudaya() {
                             rows="4"
                             placeholder="Masukkan deskripsi budaya"
                             name="description"
-                            {...register("description")}
+                            {...register("deskripsi")}
                           ></textarea>
                         </div>
+
+                        <div className="w-full">
+                          <label
+                            htmlFor=""
+                            className="text-sm font-bold text-gray-600 block text-left"
+                          >
+                            Jenis Kebudayaan
+                          </label>
+                          <select
+                            type="text"
+                            className="w-full p-2 border border-gray-200 rounded mt-4"
+                            placeholder="Masukkan Provinsi Asal"
+                            {...register("jenisKebudayaanId")}
+                          >
+                            <option value={""} disabled selected>
+                              Pilih Jenis Kebudayaan
+                            </option>
+                            <option value={1}>Pencatatan</option>
+                            <option value={2}>Penetapan</option>
+                          </select>
+                          {/* {errors && (
+                            <p className="text-left text-red-500 text-sm">
+                              {errors?.jenisKebudayaan?.message}
+                            </p>
+                          )} */}
+                        </div>
+                        <div className="w-full">
+                          <label
+                            htmlFor=""
+                            className="text-sm font-bold text-gray-600 block text-left"
+                          >
+                            Provinsi
+                          </label>
+                          <select
+                            type="text"
+                            className="w-full p-2 border border-gray-200 rounded mt-4"
+                            placeholder="Masukkan Provinsi Asal"
+                            {...register("provinsiId")}
+                          >
+                            {provinsi.length > 0 &&
+                              provinsi.map((item, idx) => (
+                                <option value={item.id} key={idx}>
+                                  {item.namaProvinsi}{" "}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+
                         <div className="w-full">
                           <label
                             htmlFor=""
@@ -117,9 +216,14 @@ function TambahBudaya() {
                               <input
                                 type="file"
                                 name="imageCover"
-                                {...register("imageCover")}
+                                {...register("gambar")}
                               />
                             </header>
+                            <img
+                              alt="upload preview"
+                              className="img-preview pt-3  w-72  sticky object-cover rounded-lg bg-fixed"
+                              src={imageURL}
+                            />
                           </section>
                           {/* <!-- sticky footer --> */}
                         </article>
@@ -136,10 +240,9 @@ function TambahBudaya() {
                           <img
                             alt="upload preview"
                             className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
+                            src={imageURL}
                           />
-
                           <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
-                            <h1 className="flex-1 group-hover:text-blue-800"></h1>
                             <div className="flex">
                               <span className="p-1 text-blue-800">
                                 <i>
@@ -187,7 +290,6 @@ function TambahBudaya() {
                           />
 
                           <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
-                            <h1 className="flex-1"></h1>
                             <div className="flex">
                               <span className="p-1">
                                 <i>
@@ -224,38 +326,13 @@ function TambahBudaya() {
                       </li>
                     </template>
                     {/* Batasan Upload Galeri Foto */}
-                    <div className="w-full px-8 mb-10">
-                      <div className="grid grid-cols-2">
-                        <button
-                          className=" bg-white border border-1 hover:shadow-md text-gray-800 font-bold mr-4 py-2 px-4 rounded items-center content-center"
-                          // onClick={() => history.push("/admin/addgaleri")}
-                        >
-                          <div className="inline-flex">
-                            <svg
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M7.91988 2H16.0899C19.6199 2 21.9999 4.271 21.9999 7.66V16.33C21.9999 19.72 19.6199 22 16.0899 22H7.91988C4.37988 22 1.99988 19.72 1.99988 16.33V7.66C1.99988 4.271 4.37988 2 7.91988 2ZM9.72988 12.75H16.0799C16.4999 12.75 16.8299 12.41 16.8299 12C16.8299 11.58 16.4999 11.25 16.0799 11.25H9.72988L12.2099 8.78C12.3499 8.64 12.4299 8.44 12.4299 8.25C12.4299 8.061 12.3499 7.87 12.2099 7.72C11.9199 7.43 11.4399 7.43 11.1499 7.72L7.37988 11.47C7.09988 11.75 7.09988 12.25 7.37988 12.53L11.1499 16.28C11.4399 16.57 11.9199 16.57 12.2099 16.28C12.4999 15.98 12.4999 15.51 12.2099 15.21L9.72988 12.75Z"
-                                fill="#130F26"
-                              />
-                            </svg>
-
-                            <span className="mx-4">Kembali</span>
-                          </div>
-                        </button>
-                        <button
-                          className="hover:shadow-md text-gray-800 bg-blue-900 font-bold mr-4 py-2 px-4 rounded items-center content-center"
-                          // onClick={handleSubmit(addGaleri)}
-                        >
-                          <span className="text-white">Simpan</span>
-                        </button>
-                      </div>
+                    <div>
+                      <button
+                        className="w-full py-2 px-4 bg-cyan-600 hover:shadow-md rounded-md text-white text-small"
+                        type="submit"
+                      >
+                        Tambah Data
+                      </button>
                     </div>
                   </div>
                 </form>

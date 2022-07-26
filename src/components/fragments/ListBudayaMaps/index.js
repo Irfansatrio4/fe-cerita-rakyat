@@ -37,12 +37,14 @@ export default function ListBudaya(props) {
   };
 
   return (
-    <section className="w-1/4 m-4 z-10">
-      <div className="justify-between">
-        <p><b>Provinsi {name}</b></p>
-        <FontAwesomeIcon className="cursor-pointer" icon={faClose} onClick={onClose} />
+    <section className="absolute bg-white w-[28rem] my-10 ml-4 z-30 p-6 rounded-md">
+      <div className="flex justify-between pb-3 border-b-2">
+        <p className='font-bold text-xl'>Provinsi {name}</p>
+        <div>
+          <FontAwesomeIcon className="cursor-pointer" icon={faClose} onClick={onClose} />
+        </div>
       </div>
-      <div className="h-64 overflow-auto">
+      <div className="h-[32rem] overflow-auto pt-2 scrollbar-hide ">
         {listBudaya?.length > 0 ? (
           listBudaya.map((i, idx) => (
             <div className="cursor-pointer" key={idx} onClick={() => handleClickBudaya(i.id)}>{i.namaBudaya}</div>

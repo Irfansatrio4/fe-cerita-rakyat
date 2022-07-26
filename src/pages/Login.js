@@ -1,42 +1,44 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import login from "../../src/assets/contoh1.png";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import NavbarLogin from "../components/elements/NavbarLogin";
+import { Navigate, useNavigate } from "react-router";
+import { routes } from "../configs/routes";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { loginSchema } from "./validation";
+import { UserContext } from "../context/context";
+import adminAPI from "../api/admin";
 
 function Login() {
-  const { register, handleSubmit } = useForm();
-  // const handleLogin = (data) => {
-  //   axios
-  //     .post("https://creaveid-api.herokuapp.com/api/user/login", data)
-  //     .then((response) => {
-  //       swal({
-  //         title: "Login Berhasil",
-  //         icon: "success",
-  //       });
-  //       Cookies.set("fullname", response.data.others.fullname);
-  //       Cookies.set("phone_number", response.data.others.phone_number);
-  //       Cookies.set("email", response.data.others.email);
-  //       Cookies.set("token", response.data.accessToken);
-  //       localStorage.setItem("token", response.data.accessToken);
-  //       Cookies.set("isAdmin", response.data.others.isAdmin);
-  //       if (Cookies.get("isAdmin") === "true") {
-  //         history.push("/admin/home");
-  //       } else {
-  //         history.push("/");
-  //       }
-  //       console.log(response);
-  //     })
-  //     .catch((error) => {
-  //       swal({
-  //         title: "Username atau Password salah",
-  //         text: "Harap input username atau password dengan benar !",
-  //         icon: "error",
-  //         button: "Ok !",
-  //       });
-  //       console.log(error);
-  //     });
-  // };
+  const { user, setUser } = useContext(UserContext);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+  });
+  const [alert, setAlert] = useState(false);
+  const [message, setMessage] = useState("");
+
+  console.log(user);
+  const submitForm = async (data) => {
+    try {
+      // setLoading(true);
+      const res = await adminAPI.login(data);
+      if (res.data.success) {
+        setUser(res.data.data);
+        setAlert(false);
+        // setLoading(false);
+      }
+    } catch (error) {
+      // setLoading(false);
+      setMessage(error.response.data.message);
+      setAlert(true);
+    }
+  };
+  console.log(message);
   return (
     <div>
       <NavbarLogin />
@@ -46,7 +48,7 @@ function Login() {
           <div className=" flex justify-center mt-5 mb-5">
             <img src={login} alt="Image" className="content-center" />
           </div>
-          <form action="" className="space-y-6">
+          <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
             <div>
               <label
                 className="text-sm font-bold text-gray-600 block"
@@ -58,8 +60,13 @@ function Login() {
                 type="text"
                 className="w-full p-2 border border-gray-300 rounded mt-1"
                 name="username"
-                {...register("username")}
+                {...register("userName")}
               />
+              {errors && (
+                <p className="text-left text-red-500 text-sm">
+                  {errors?.userName?.message}
+                </p>
+              )}
             </div>
             <div>
               <label
@@ -74,17 +81,23 @@ function Login() {
                 name="password"
                 {...register("password")}
               />
+              {errors && (
+                <p className="text-left text-red-500 text-sm">
+                  {errors?.password?.message}
+                </p>
+              )}
             </div>
+            <p className="text-left text-red-500 text-sm">{message}</p>
             <div>
               <button
                 className="w-full py-2 px-4 bg-cyan-600 hover:shadow-md rounded-md text-white text-small"
                 type="submit"
-                //   onClick={history.push("/admin/home")}
               >
                 Masuk
               </button>
             </div>
           </form>
+          {user && <Navigate to={routes.ADMIN()} />}
         </div>
       </div>
     </div>

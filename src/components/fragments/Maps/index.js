@@ -56,8 +56,9 @@ export default function Maps(props) {
   };
 
   return (
-    <div className="z-0 absolute">
+    <div>
       <MapContainer
+        className="fixed"
         center={[-0.789275, 113.921326]}
         zoom={6}
         zoomControl={false}

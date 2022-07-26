@@ -16,7 +16,7 @@ function Navbar() {
   //   }
 
   return (
-    <nav className="w-full sticky top-0 z-20  py-5 bg-white shadow-md">
+    <nav className="w-full top-0 z-40 sticky py-5 bg-white shadow-md" >
       <div className="w-4/5 mx-auto flex justify-start items-center">
         <div className="w-1/12 ">
           {/* <span to="/"> */}

@@ -1,7 +1,11 @@
 import React from "react";
 import order from "../../assets/contoh1.png";
+import { useNavigate } from "react-router";
 
 export default function About() {
+
+  const navigate = useNavigate();
+
   return (
     <div>
       <div className=" container mx-auto grid grid-cols-2 grid-row-2 items-center pt-10 w-11/12">
@@ -20,7 +24,7 @@ export default function About() {
             </p>
           </div>
           {/* <Link to="/event"> */}
-          <button className="bg-cyan-600 w-1/5 py-2 rounded-md font-bold uppercase text-white">
+          <button className="bg-cyan-600 w-1/5 py-2 rounded-md font-bold uppercase text-white" onClick={() => navigate("/maps")}>
             Lihat Peta
           </button>
           {/* </Link> */}

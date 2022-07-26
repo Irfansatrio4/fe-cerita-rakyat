@@ -6,6 +6,7 @@ import TambahBudaya from "../components/fragments/TambahBudaya";
 import kebudayaanAPI from "../api/kebudayaan";
 import { useNavigate } from "react-router";
 import { routes } from "../configs/routes";
+import EditBudaya from "../components/fragments/EditBudaya";
 
 function ListData() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -38,7 +39,7 @@ function ListData() {
               </div>
               <div>
                 <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-12 bg-white shadow-lg rounded-sm border border-gray-200">
-                  <TambahBudaya isLoading={loading} />
+                  <EditBudaya />
                 </div>
               </div>
             </div>

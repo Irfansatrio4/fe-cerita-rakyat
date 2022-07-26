@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import { routes } from '../configs/routes';
 import ListBudaya from '../components/fragments/ListBudayaMaps';
+import DetailBudaya from '../components/fragments/DetailBudaya';
 
 
 
@@ -43,9 +44,9 @@ export default function MapsPage() {
       setlocationName(name);
     };
 
-    // const handleClickResult = (id) => {
-    //   navigate(routes.DETAIL_BUDAYA(id))
-    // };
+    const handleClickResult = (id) => {
+      navigate(routes.DETAIL_BUDAYA(id))
+    };
 
   //   const handleInput = (e) => {
   //     setKeyword(e.target.value);
@@ -69,24 +70,29 @@ export default function MapsPage() {
     const renderContent = () => {
       if (id) {
         return (
-          <ListBudaya name={locationName} />
+          <ListBudaya handleClickBudaya={handleClickResult} name={locationName} />
         );
+      }
+        if (idBudaya) {
+          return (
+            <DetailBudaya />
+          );
+        }
       } 
-    }
+    
 
   return (
     <div>
-      <div className="fixed z-10">
-
-      {renderContent()}
+      <div>
+        {renderContent()}
       </div>
-      <Maps
-        data={dataProvinsi}
-        geoJson={data}
-        handleClick={handleClickLocation}
-        high={dataCalc.high}
-        low={dataCalc.low}
-      />
+        <Maps
+          data={dataProvinsi}
+          geoJson={data}
+          handleClick={handleClickLocation}
+          high={dataCalc.high}
+          low={dataCalc.low}
+        />
     </div>
   );
 }
