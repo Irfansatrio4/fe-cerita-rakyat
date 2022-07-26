@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import provinsiAPI from "../../../api/provinsi";
@@ -9,6 +9,8 @@ import { useSearchParams } from "react-router-dom";
 import Header from "../../elements/Header";
 import WelcomeBanner from "../../elements/WelcomeBanner";
 import { editBudayaSchema } from "./validation";
+import checkURL from "../../../helper/checkURL";
+import defaultImg from "../../../assets/noimage.png";
 
 function EditBudaya({ data }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -34,11 +36,24 @@ function EditBudaya({ data }) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: preloadValues,
     resolver: yupResolver(editBudayaSchema),
   });
+
+  const watchImage = watch("gambar");
+
+  const imageURL = useMemo(() => {
+    if (typeof watchImage === "string" && checkURL(watchImage)) {
+      return watchImage;
+    }
+    if (watchImage?.length > 0 && watchImage !== "undefined") {
+      return URL.createObjectURL(watchImage[0]);
+    }
+    return "";
+  }, [watchImage]);
 
   const fetchDataProvinsi = async () => {
     const res = await provinsiAPI.getProvinces(idProv);
@@ -111,6 +126,16 @@ function EditBudaya({ data }) {
                               </h2>
                             </header>
                             <div className="p-3">
+                              <img
+                                alt="upload preview"
+                                className="img-preview  w-72  sticky object-cover rounded-lg bg-fixed mx-auto"
+                                src={imageURL}
+                                defaultValue={preloadValues.gambar}
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = defaultImg;
+                                }}
+                              />
                               {/* Table */}
                               <form
                                 id="add_budaya"
@@ -119,6 +144,7 @@ function EditBudaya({ data }) {
                                 <div className="overflow-x-auto">
                                   <div className="App">
                                     <div className="grid gap-y-4 p-8">
+                                      {/* <img src={data?.gambar} /> */}
                                       <div className="w-full">
                                         <label
                                           htmlFor=""
@@ -265,6 +291,7 @@ function EditBudaya({ data }) {
                                             />
                                           </header>
                                         </section>
+                                        <img></img>
                                         {/* <!-- sticky footer --> */}
                                       </article>
                                     </div>

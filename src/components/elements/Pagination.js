@@ -32,13 +32,14 @@ export default function Pagination({
 
   if (show)
     return (
-      <div>
-        <div>
+      <div className="flex justify-between pt-4 bg-gray-100 pr-6">
+        <div className="">
           Halaman <strong>{currentPage}</strong> dari{" "}
           <strong>{totalPages}</strong>
         </div>
         <div>
           <button
+            className="cursor-pointer"
             onClick={() => {
               onPageSelect(1);
             }}
@@ -46,12 +47,16 @@ export default function Pagination({
           >
             <FontAwesomeIcon icon={faAngleDoubleLeft} />
           </button>
-          <button onClick={() => onPrevPage()} disabled={!canGoBack}>
+          <button
+            onClick={() => onPrevPage()}
+            disabled={!canGoBack}
+            className="cursor-pointer"
+          >
             <FontAwesomeIcon icon={faAngleLeft} />
           </button>
           <input
             type="number"
-            // className={style.inputPage}
+            className="bg-gray-100 text-center "
             value={currentPage}
             min={1}
             max={totalPages}
@@ -63,7 +68,11 @@ export default function Pagination({
               }
             }}
           />
-          <button onClick={() => onNextPage()} disabled={!canGoNext}>
+          <button
+            onClick={() => onNextPage()}
+            disabled={!canGoNext}
+            className="cursor-pointer"
+          >
             <FontAwesomeIcon icon={faAngleRight} />
           </button>
           <button
@@ -71,6 +80,7 @@ export default function Pagination({
               onPageSelect(totalPages);
             }}
             disabled={!canGoNext}
+            className="cursor-pointer"
           >
             <FontAwesomeIcon icon={faAngleDoubleRight} />
           </button>

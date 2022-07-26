@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 import Pagination from "../components/elements/Pagination";
 import ModalDelete from "../components/fragments/Modals/ModalDelete";
 import EditBudaya from "../components/fragments/EditBudaya";
+import useModal from "../hooks/useModals";
 
 function ListData() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -20,7 +21,6 @@ function ListData() {
   const [searchParams] = useSearchParams();
   const edit = searchParams.get("editBudaya");
   const { user } = useContext(UserContext);
-  const [openDelete, setOpenDelete] = useState(false);
   const [deletedData, setDeletedData] = useState(null);
   const [pageData, setPageData] = useState({
     isLoading: false,
@@ -35,6 +35,7 @@ function ListData() {
   });
   const [editData, setEditData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const fetchData = async () => {
     try {
@@ -75,13 +76,13 @@ function ListData() {
 
   const handleDelete = (id) => {
     setDeletedData(id);
-    setOpenDelete(true);
+    openModal();
   };
 
   const editColumn = (e) => {
     return (
       <div onClick={() => handleClick(e)}>
-        <FontAwesomeIcon icon={faEdit} />
+        <FontAwesomeIcon className="cursor-pointer" icon={faEdit} />
       </div>
     );
   };
@@ -89,7 +90,7 @@ function ListData() {
   const deleteColumn = (e) => {
     return (
       <div onClick={() => handleDelete(e)}>
-        <FontAwesomeIcon icon={faTrash} />
+        <FontAwesomeIcon className="cursor-pointer" icon={faTrash} />
       </div>
     );
   };
@@ -98,7 +99,7 @@ function ListData() {
     try {
       const res = await kebudayaanAPI.deleteBudaya(deletedData);
       if (res.data.success) {
-        setOpenDelete(false);
+        closeModal();
         fetchData();
       }
     } catch (error) {
@@ -173,7 +174,7 @@ function ListData() {
                 </div>
               </div>
               <div>
-                <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-12 bg-white shadow-lg">
+                <div className="flex flex-col col-span-full sm:col-span-6 xl:col-span-12 bg-white">
                   <ListBudaya
                     columnTable={COLUMNS}
                     dataTable={pageData.rowData}
@@ -188,9 +189,11 @@ function ListData() {
                     show={true}
                   />
                   <ModalDelete
-                    show={openDelete}
-                    onClose={() => setOpenDelete(false)}
-                    deleteClick={deleteFunction}
+                    title="Delete this Budaya?"
+                    description="You can't undo this action once you deleted this user."
+                    isOpen={isOpen}
+                    onClickConfirm={deleteFunction}
+                    closeModal={closeModal}
                   />
                 </div>
               </div>

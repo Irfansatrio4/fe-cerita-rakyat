@@ -32,7 +32,7 @@ export default function ListBudaya({ columnTable, dataTable, isLoading }) {
           rows.map((row) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()} className>
+              <tr {...row.getRowProps()} className="text-center">
                 {row.cells.map((cell) => {
                   return (
                     <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
