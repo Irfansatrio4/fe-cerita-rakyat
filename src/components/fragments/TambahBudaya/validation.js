@@ -22,6 +22,6 @@ export const formBudayaSchema = yup.object().shape({
     .min(2010)
     .max(yearToday, "Tahun melebihi tahun pendaftaran")
     .required("Tahun wajib diisi"),
-  // jenisKebudayaan: yup.string().required("Jenis Kebudayaan Wajib diisi"),
+  // jenisKebudayaan: yup.number().required("Jenis Kebudayaan Wajib diisi"),
   deskripsi: yup.string(),
 });

@@ -6,7 +6,7 @@ import provinsiAPI from "../../../api/provinsi";
 import { useNavigate } from "react-router";
 import kebudayaanAPI from "../../../api/kebudayaan";
 import { routes } from "../../../configs/routes";
-import defaultImg from "../../../assets/contoh1.png";
+import defaultImg from "../../../assets/noimage.png";
 import checkURL from "../../../helper/checkURL";
 
 function TambahBudaya() {
@@ -167,17 +167,9 @@ function TambahBudaya() {
                             placeholder="Masukkan Provinsi Asal"
                             {...register("jenisKebudayaanId")}
                           >
-                            <option value={""} disabled selected>
-                              Pilih Jenis Kebudayaan
-                            </option>
                             <option value={1}>Pencatatan</option>
                             <option value={2}>Penetapan</option>
                           </select>
-                          {/* {errors && (
-                            <p className="text-left text-red-500 text-sm">
-                              {errors?.jenisKebudayaan?.message}
-                            </p>
-                          )} */}
                         </div>
                         <div className="w-full">
                           <label
@@ -215,7 +207,7 @@ function TambahBudaya() {
                             <header className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
                               <input
                                 type="file"
-                                name="imageCover"
+                                name="gambar"
                                 {...register("gambar")}
                               />
                             </header>
@@ -223,6 +215,10 @@ function TambahBudaya() {
                               alt="upload preview"
                               className="img-preview pt-3  w-72  sticky object-cover rounded-lg bg-fixed"
                               src={imageURL}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = defaultImg;
+                              }}
                             />
                           </section>
                           {/* <!-- sticky footer --> */}
