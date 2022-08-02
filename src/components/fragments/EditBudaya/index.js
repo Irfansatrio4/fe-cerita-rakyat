@@ -286,6 +286,7 @@ function EditBudaya({ data }) {
                                           <header className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
                                             <input
                                               type="file"
+                                              accept="image/png, image/jpg, image/jpeg"
                                               name="imageCover"
                                               {...register("gambar")}
                                             />

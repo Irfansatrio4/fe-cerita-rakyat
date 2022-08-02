@@ -39,7 +39,7 @@ export default function Pagination({
         </div>
         <div>
           <button
-            className="cursor-pointer"
+            className="cursor-pointer mr-3"
             onClick={() => {
               onPageSelect(1);
             }}
@@ -71,7 +71,7 @@ export default function Pagination({
           <button
             onClick={() => onNextPage()}
             disabled={!canGoNext}
-            className="cursor-pointer"
+            className="cursor-pointer "
           >
             <FontAwesomeIcon icon={faAngleRight} />
           </button>
@@ -80,7 +80,7 @@ export default function Pagination({
               onPageSelect(totalPages);
             }}
             disabled={!canGoNext}
-            className="cursor-pointer"
+            className="cursor-pointer ml-3"
           >
             <FontAwesomeIcon icon={faAngleDoubleRight} />
           </button>
