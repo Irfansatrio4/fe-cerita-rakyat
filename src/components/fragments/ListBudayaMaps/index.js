@@ -6,7 +6,6 @@ import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import kebudayaanAPI from "../../../api/kebudayaan";
 import { routes } from "../../../configs/routes";
-// import Loader from '../../elements/Loader';
 
 export default function ListBudaya(props) {
   const { name, handleClickBudaya } = props;

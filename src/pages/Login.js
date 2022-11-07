@@ -38,7 +38,7 @@ function Login() {
       setAlert(true);
     }
   };
-  console.log(message);
+
   return (
     <div>
       <NavbarLogin />
